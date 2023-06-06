@@ -14,7 +14,7 @@ const Settings = () => {
       <Text>Settings</Text>
       <Pressable
         style={styles.button}
-        onPress={() => navigation.replace('Home')}>
+        onPress={() => navigation.navigate('Home')}>
         <Text style={styles.buttonText}>Go to Home</Text>
       </Pressable>
     </View>
