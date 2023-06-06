@@ -6,7 +6,6 @@ import {Pressable} from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../App';
 import {styles} from '../../styles';
-import {useRefreshOnFocus} from '../../hooks/useRefreshOnFocus';
 
 const Home = () => {
   const {
@@ -19,7 +18,6 @@ const Home = () => {
   } = useLaunches();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList, 'Home'>>();
-  useRefreshOnFocus(refetch);
 
   return (
     <ScrollView
