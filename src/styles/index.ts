@@ -27,4 +27,7 @@ export const styles = StyleSheet.create({
     marginVertical: 10,
     color: '#111',
   },
+  spacer: {
+    height: 200,
+  },
 });

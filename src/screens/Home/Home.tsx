@@ -7,9 +7,13 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../App';
 import {styles} from '../../styles';
 import {useCrew} from '../../data/useCrew';
+import {useLaunchCrew} from '../../data/useLaunchCrew';
+import {Launch} from '../../network/modals/launch.modal';
+import {Crew} from '../../network/modals/crew.modal';
+import {useQueryClient} from '@tanstack/react-query';
 
 const Home = () => {
-  const [crewId, setCrewId] = React.useState('');
+  const [crewMembers, setCrewMembers] = React.useState<string[]>([]);
 
   const {
     isLoading,
@@ -21,14 +25,28 @@ const Home = () => {
   } = useLaunches();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList, 'Home'>>();
-  const {data: crew} = useCrew(crewId);
-
+  let results = useLaunchCrew(crewMembers);
+  const queryClient = useQueryClient();
   useEffect(() => {
     //delay the crewId update to simulate a slow network
-    setTimeout(() => {
-      setCrewId(data?.crew[0] || '');
+    if (!data) {
+      return;
+    }
+    const sub = setTimeout(() => {
+      setCrewMembers(data.crew || []);
     }, 2000);
+    return () => {
+      clearTimeout(sub);
+    };
   }, [data]);
+
+  useEffect(() => {
+    //invalidate crew queries when launch data changes
+    if (!data) {
+      return;
+    }
+    queryClient?.invalidateQueries(['crew/']);
+  }, [data, isRefetchingByUser, queryClient]);
 
   return (
     <ScrollView
@@ -52,7 +70,16 @@ const Home = () => {
         </Pressable>
         <Text>{JSON.stringify(data)}</Text>
         <Text style={styles.header}>Crew Details</Text>
-        <Text>{JSON.stringify(crew)}</Text>
+        {results && (
+          <Text>
+            {JSON.stringify(results.some(query => query.isRefetching))}
+          </Text>
+        )}
+        {results.map((query, index) => {
+          return <Text key={index}>{query.data?.name}</Text>;
+        })}
+
+        <View style={styles.spacer} />
       </View>
     </ScrollView>
   );
