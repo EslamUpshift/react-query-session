@@ -6,9 +6,11 @@ import {Pressable} from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../App';
 import {styles} from '../../styles';
-import {useQueryClient} from '@tanstack/react-query';
+import {useCrew} from '../../data/useCrew';
 
 const Home = () => {
+  const [crewId, setCrewId] = React.useState('');
+
   const {
     isLoading,
     isRefetching,
@@ -16,32 +18,17 @@ const Home = () => {
     refetch,
     refetchByUser,
     isRefetchingByUser,
-    isStale,
   } = useLaunches();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList, 'Home'>>();
-  const queryClient = useQueryClient();
-
-  // useEffect(() => {
-  //   // invalidate the query after 10 seconds
-  //   const sub = setTimeout(() => {
-  //     queryClient?.invalidateQueries(['launches/latest']);
-  //   }, 10000);
-
-  //   return () => {
-  //     clearTimeout(sub);
-  //   };
-  // }, [queryClient]);
+  const {data: crew} = useCrew(crewId);
 
   useEffect(() => {
-    // invalidate the query after user pull to refresh by 3 seconds
-    const sub = setTimeout(() => {
-      queryClient?.invalidateQueries(['launches/latest']);
-    }, 3000);
-    return () => {
-      clearTimeout(sub);
-    };
-  }, [isRefetchingByUser, queryClient]);
+    //delay the crewId update to simulate a slow network
+    setTimeout(() => {
+      setCrewId(data?.crew[0] || '');
+    }, 2000);
+  }, [data]);
 
   return (
     <ScrollView
@@ -52,10 +39,9 @@ const Home = () => {
         />
       }>
       <View>
-        <Text>Home</Text>
         {isLoading && <Text>Loading...</Text>}
         {isRefetching && <Text>Refetching...</Text>}
-        <Text>{JSON.stringify(isStale)}</Text>
+        <Text style={styles.header}>Launch Details</Text>
         <Pressable
           style={styles.button}
           onPress={() => navigation.navigate('Settings')}>
@@ -65,6 +51,8 @@ const Home = () => {
           <Text style={styles.buttonText}>Refetch</Text>
         </Pressable>
         <Text>{JSON.stringify(data)}</Text>
+        <Text style={styles.header}>Crew Details</Text>
+        <Text>{JSON.stringify(crew)}</Text>
       </View>
     </ScrollView>
   );

@@ -1,8 +1,11 @@
 import {useRefreshByUser} from '../hooks/useRefetchByUser';
 import {useQuery} from '@tanstack/react-query';
-import {launchEndpoint} from '../network/endpoints';
-export const useLaunches = () => {
-  const query = useQuery(['launches/latest'], () => launchEndpoint.latest());
+import {crewEndpoint} from '../network/endpoints/crew';
+import {Crew} from '../network/modals/crew.modal';
+export const useCrew = (id: Crew['id']) => {
+  const query = useQuery(['crew/', id], () => crewEndpoint.getOne(id), {
+    enabled: !!id,
+  });
 
   const handleRefresh = async () => {
     await query?.refetch();

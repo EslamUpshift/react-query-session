@@ -24,6 +24,7 @@ export const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginVertical: 10,
+    color: '#111',
   },
 });

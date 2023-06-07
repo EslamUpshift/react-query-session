@@ -8,7 +8,13 @@ import {
 import {useOnlineManager} from '../hooks/useOnlineManager';
 import {useAppState} from '../hooks/useAppState';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: Infinity,
+    },
+  },
+});
 function onAppStateChange(status: AppStateStatus) {
   // React Query already supports in web browser refetch on window focus by default
   if (Platform.OS !== 'web') {
